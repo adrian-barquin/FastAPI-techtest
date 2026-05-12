@@ -1,0 +1,75 @@
+.user-form {
+    margin-bottom: 32px;
+}
+
+.user-form form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.user-form input {
+    flex: 1;
+    min-width: 160px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.user-form input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.user-form button {
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #4f46e5;
+    color: white;
+    cursor: pointer;
+}
+
+.user-form button:hover {
+    background-color: #4338ca;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: white;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+.checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #4f46e5;
+    cursor: pointer;
+}
+
+.checkbox:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.checkbox:focus-within {
+    outline: none;
+    box-shadow: none;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.checkbox input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: none;
+}

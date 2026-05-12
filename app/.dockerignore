@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.db
+
+venv/
+
+.git
+.gitignore
+
+.DS_Store
+Thumbs.db

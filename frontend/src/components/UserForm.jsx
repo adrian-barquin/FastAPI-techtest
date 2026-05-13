@@ -90,20 +90,6 @@ export default function UserForm({users, onUserCreated}){
                         value={form.phone}
                         onChange={handleChange}
                     />
-                    <label className="checkbox">
-                        <input
-                            type="checkbox"
-                            name="active"
-                            checked={form.active}
-                            onChange={(e) =>
-                            setForm((prev) => ({
-                                ...prev,
-                                active: e.target.checked,
-                            }))
-                            }
-                        />
-                        ¿Posee vehículo?
-                    </label>
                     <input
                         name="age"
                         type="number"
@@ -114,6 +100,16 @@ export default function UserForm({users, onUserCreated}){
                         onChange={handleChange}
                         required
                     />
+                    <label className="checkbox">
+                        <input
+                            type="checkbox"
+                            name="active"
+                            checked={form.active}
+                            onChange={(e) => setForm((prev) => ({...prev, active: e.target.checked})) }
+                        />
+                        ¿Posee vehículo?
+                    </label>
+
                     <button type="submit">Crear</button>
                 </form>
             </div>

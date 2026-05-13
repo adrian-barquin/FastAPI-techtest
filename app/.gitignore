@@ -1,0 +1,10 @@
+# python
+app/__pycache__/
+*pyc
+
+# SQLite
+*.db
+
+# entornos virtuales
+app/venv/
+.env

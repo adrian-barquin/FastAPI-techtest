@@ -1,0 +1,88 @@
+.user-form {
+    margin-bottom: 32px;
+}
+
+.user-form form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.user-form input {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border: 1px solid #2A2A5A;
+    border-radius: 6px;
+    background-color: #13132B;
+    color: #F0F0FF;
+}
+
+.user-form input::placeholder {
+    color: #9B9BCC;
+}
+
+.user-form input[name="age"] {
+    flex: 0 0 80px;
+    min-width: unset;
+}
+
+.user-form input:focus {
+    outline: none;
+    border-color: #A855F7;
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.25);
+}
+
+.user-form button {
+    flex: 0 0 100%;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #A855F7;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.user-form button:hover {
+    background-color: #9333ea;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 10px;
+    border: 1px solid #2A2A5A;
+    border-radius: 6px;
+    background-color: #13132B;
+    color: #F0F0FF;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #A855F7;
+    cursor: pointer;
+    min-width: unset;
+    flex: none;
+}
+
+.checkbox:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.25);
+    border-color: #A855F7;
+}
+
+.checkbox input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: none;
+}

@@ -2,103 +2,85 @@ import { useEffect, useState } from "react";
 import { getAllUsers, deleteUsers } from "../api/users";
 import UserList from "../components/UserList";
 import UserForm from "../components/UserForm";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 
 export default function UsersPage() {
-  const [users, setUsers] = useState([]);
-  const [vehicleFilter, setVehicleFilter] = useState("all");
-  const [deleteMode, setDeleteMode] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [showConfirm, setShowConfirm] = useState(false);
+    const [users, setUsers] = useState([]);
+    const [vehicleFilter, setVehicleFilter] = useState("all");
+    const [deleteMode, setDeleteMode] = useState(false);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [showConfirm, setShowConfirm] = useState(false);
 
-  async function loadUsers() {
-    try {
-      const data = await getAllUsers();
-      setUsers(data);
-    } catch (err) {
-      console.error(err);
+    async function loadUsers() {
+        try {
+            const data = await getAllUsers();
+            setUsers(data);
+        } catch (err) {
+            console.error(err);
+        }
     }
-  }
 
-  async function handleConfirmDelete() {
-    try {
-      await deleteUsers(selectedUsers);
-      setShowConfirm(false);
-      setDeleteMode(false);
-      setSelectedUsers([]);
-      loadUsers();
-    } catch (err) {
-      console.error(err);
+    async function handleConfirmDelete() {
+        try {
+            await deleteUsers(selectedUsers);
+            setShowConfirm(false);
+            setDeleteMode(false);
+            setSelectedUsers([]);
+            loadUsers();
+        } catch (err) {
+            console.error(err);
+        }
     }
-  }
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
+    function handleCancelDelete() {
+        setShowConfirm(false);
+        setDeleteMode(false);
+        setSelectedUsers([]);
+    }
 
-  return (
-    <>
-      <UserForm users={users} onUserCreated={loadUsers} />
+    useEffect(() => { loadUsers(); }, []);
 
-      <div className="card">
-        <h2 className="card-title">Listado</h2>
+    return (
+        <>
+            <UserForm users={users} onUserCreated={loadUsers} />
 
-        <UserList
-          users={users}
-          vehicleFilter={vehicleFilter}
-          setVehicleFilter={setVehicleFilter}
-          deleteMode={deleteMode}
-          selectedUsers={selectedUsers}
-          setSelectedUsers={setSelectedUsers}
-        />
+            <div className="card">
+                <div className="list-header">
+                    <h2 className="card-title">Listado</h2>
 
-        {!deleteMode && (
-          <button onClick={() => setDeleteMode(true)}>
-            Eliminar
-          </button>
-        )}
+                    <button
+                        className="danger"
+                        disabled={deleteMode && selectedUsers.length === 0}
+                        onClick={() => {
+                            if (!deleteMode) {
+                                setDeleteMode(true);
+                            } else {
+                                setShowConfirm(true);
+                            }
+                        }}
+                    >
+                        Eliminar
+                    </button>
+                </div>
 
-        {deleteMode && (
-          <>
-            <button
-              disabled={selectedUsers.length === 0}
-              onClick={() => setShowConfirm(true)}
-            >
-              Eliminar seleccionados
-            </button>
+                <UserList
+                    users={users}
+                    vehicleFilter={vehicleFilter}
+                    setVehicleFilter={setVehicleFilter}
+                    deleteMode={deleteMode}
+                    selectedUsers={selectedUsers}
+                    setSelectedUsers={setSelectedUsers}
+                />
 
-            <button
-              className="secondary"
-              onClick={() => {
-                setDeleteMode(false);
-                setSelectedUsers([]);
-              }}
-            >
-              Cancelar
-            </button>
-          </>
-        )}
-      </div>
-
-      {showConfirm && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <p>
-              ¿Está seguro de que quiere eliminar?<br />
-              <strong>Esta acción no se puede deshacer</strong>
-            </p>
-
-            <div className="modal-actions">
-              <button className="danger" onClick={handleConfirmDelete}>
-                Aceptar
-              </button>
-              <button className="secondary" onClick={() => setShowConfirm(false)}>
-                Cancelar
-              </button>
+                {showConfirm && (
+                    <ConfirmDeleteModal
+                        onConfirm={handleConfirmDelete}
+                        onCancel={handleCancelDelete}
+                    />
+                )}
             </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
+        </>
+    );
+
 }

@@ -25,22 +25,28 @@ export default function UserList({
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    const filterRef = useRef(null);
+
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (filterRef.current && !filterRef.current.contains(e.target)) {
+                setOpen(false);
+            }
+        }
+        if (open) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [open]);
+
     const filteredUsers = users.filter((user) => {
         if(vehicleFilter === "all") return true;
         if(vehicleFilter === "yes") return user.active === true;
         if(vehicleFilter === "no") return user.active === false;
         return true;
     });
-
-    useEffect(() => { setCurrentPage(1); }, [vehicleFilter, pageSize]);
-
-    const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
-    const safePage = Math.min(currentPage, totalPages);
-    const startIndex = (safePage - 1) * pageSize;
-    const endIndex = Math.min(startIndex + pageSize, filteredUsers.length);
-    const pageUsers = filteredUsers.slice(startIndex, endIndex);
-
-    const rangeLabel = filteredUsers.length === 0 ? "0" : `${startIndex + 1}-${endIndex}`;
 
     function toggleUser(id, checked) {
         if(checked) {
@@ -82,21 +88,7 @@ export default function UserList({
                 <table>
                     <thead>
                         <tr>
-                            {deleteMode && (
-                                <th>
-                                    <input
-                                        type="checkbox"
-                                        checked={filteredUsers.length > 0 && filteredUsers.every(u => selectedUsers.includes(u.id))}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setSelectedUsers(filteredUsers.map(u => u.id));
-                                            } else {
-                                                setSelectedUsers([]);
-                                            }
-                                        }}
-                                    />
-                                </th>
-                            )}
+                            {deleteMode && <th></th>}
                             <th>Nombre</th>
                             <th>Email</th>
                             <th>Teléfono</th>
@@ -127,14 +119,14 @@ export default function UserList({
                         </tr>
                     </thead>
                     <tbody>
-                        {noResults ? (
+                        {filteredUsers.length === 0 ? (
                             <tr>
-                                <td colSpan={deleteMode ? 6 : 5} className="user-list-empty">
+                                <td colSpan={deleteMode ? 5 : 4} className="user-list-empty">
                                     No hay usuarios
                                 </td>
                             </tr>
                         ) : (
-                            pageUsers.map((user) => (
+                            filteredUsers.map((user) => (
                                 <tr key={user.id} className={user.active ? "row-active" : "row-inactive"}>
                                     {deleteMode && (
                                         <td>
@@ -157,28 +149,6 @@ export default function UserList({
                     </tbody>
                 </table>
             </div>
-
-            {!noResults && (
-                <div className="user-list-pagination">
-                    <button
-                        className="pagination-btn"
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        disabled={safePage === 1}
-                    >
-                        ‹
-                    </button>
-                    <span className="pagination-info">
-                        {rangeLabel} &nbsp;·&nbsp; Página {safePage} de {totalPages}
-                    </span>
-                    <button
-                        className="pagination-btn"
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        disabled={safePage === totalPages}
-                    >
-                        ›
-                    </button>
-                </div>
-            )}
         </div>
     );
 }

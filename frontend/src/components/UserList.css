@@ -1,9 +1,6 @@
 .user-list {
-    width: 100%;
-    overflow: visible;
-}
-
-.user-list.scroll {
+    display: flex;
+    justify-content: center;
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -104,11 +101,6 @@
     color: #F0F0FF;
 }
 
-.filter-dropdown label.filter-disabled {
-    color: #F0F0FF;
-    opacity: 0.5;
-}
-
 .filter-dropdown input[type="radio"] {
     accent-color: #A855F7;
 }
@@ -132,54 +124,4 @@
         padding: 8px 6px;
         font-size: 0.82rem;
     }
-}
-
-.user-list-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 4px 10px;
-}
-
-.user-list-count {
-    font-size: 0.85rem;
-    color: #9B9BCC;
-}
-
-.user-list-pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    padding: 14px 4px 4px;
-}
-
-.pagination-btn {
-    background: #1A1A3E;
-    border: 1px solid #2A2A5A;
-    color: #F0F0FF;
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-}
-
-.pagination-btn:hover:not(:disabled) {
-    background: #2A2A5A;
-}
-
-.pagination-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.pagination-info {
-    font-size: 0.88rem;
-    color: #9B9BCC;
-    white-space: nowrap;
 }

@@ -48,24 +48,21 @@ export default function UsersPage() {
             <div className="card">
                 <div className="list-header">
                     <h2 className="card-title">Listado</h2>
-                        <div style={{ display: "flex", gap: "8px" }}>
-                            {deleteMode && (
-                                <button className="secondary" onClick={() => { setDeleteMode(false); setSelectedUsers([]); }} >
-                                    Cancelar
-                                </button>
-                            )}
-                            <button className="danger" disabled={deleteMode && selectedUsers.length === 0}
-                                onClick={() => {
-                                    if (!deleteMode) {
-                                        setDeleteMode(true);
-                                    } else {
-                                        setShowConfirm(true);
-                                    }
-                                }}
-                            >
-                                Eliminar
-                            </button>
-                        </div>
+
+
+                    <button
+                        className="danger"
+                        disabled={deleteMode && selectedUsers.length === 0}
+                        onClick={() => {
+                            if (!deleteMode) {
+                                setDeleteMode(true);
+                            } else {
+                                setShowConfirm(true);
+                            }
+                        }}
+                    >
+                        Eliminar
+                    </button>
                 </div>
 
                 <UserList

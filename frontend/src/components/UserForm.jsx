@@ -128,64 +128,43 @@ export default function UserForm({ users, onUserCreated }) {
             <h2 className="card-title">Crear usuario</h2>
             <div className="user-form">
                 <form onSubmit={handleSubmit}>
-                    <div className="field-wrapper">
-                        <input
-                            name="name"
-                            placeholder="Nombre"
-                            value={form.name}
-                            onChange={handleChange}
-                            onFocus={() => handleFocus("name")}
-                            onBlur={() => handleBlur("name")}
-                            className={errors.name ? "input-error" : ""}
-                            required
-                        />
-                        {hints.name && !errors.name && <span className="field-hint">{hints.name}</span>}
-                        {errors.name && <span className="field-error">{errors.name}</span>}
-                    </div>
 
-                    <div className="field-wrapper">
-                        <input
-                            name="email"
-                            placeholder="Email"
-                            value={form.email}
-                            readOnly
-                        />
-                    </div>
-
-                    <div className="field-wrapper">
-                        <input
-                            name="phone"
-                            placeholder="Teléfono"
-                            value={form.phone}
-                            onChange={handleChange}
-                            onFocus={() => handleFocus("phone")}
-                            onBlur={() => handleBlur("phone")}
-                            className={errors.phone ? "input-error" : ""}
-                            maxLength={9}
-                        />
-                        {hints.phone && !errors.phone && <span className="field-hint">{hints.phone}</span>}
-                        {errors.phone && <span className="field-error">{errors.phone}</span>}
-                    </div>
-
-                    <div className="field-wrapper field-wrapper--small">
-                        <input
-                            name="age"
-                            type="number"
-                            placeholder="Edad"
-                            value={form.age}
-                            min={16}
-                            max={100}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
+                    <input
+                        name="name"
+                        placeholder="Nombre"
+                        value={form.name}
+                        onChange={handleChange}
+                        required
+                    />
+                    <input
+                        name="email"
+                        placeholder="Email"
+                        value={form.email}
+                        readOnly
+                    />
+                    <input
+                        name="phone"
+                        placeholder="Teléfono"
+                        value={form.phone}
+                        onChange={handleChange}
+                    />
+                    <input
+                        name="age"
+                        type="number"
+                        placeholder="Edad"
+                        value={form.age}
+                        min={16}
+                        max={100}
+                        onChange={handleChange}
+                        required
+                    />
                     <label className="checkbox">
                         <input
                             type="checkbox"
                             name="active"
                             checked={form.active}
-                            onChange={(e) => setForm((prev) => ({ ...prev, active: e.target.checked }))}
+
+                            onChange={(e) => setForm((prev) => ({...prev, active: e.target.checked})) }
                         />
                         ¿Posee vehículo?
                     </label>

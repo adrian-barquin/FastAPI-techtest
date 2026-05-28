@@ -18,17 +18,21 @@
     border-radius: 6px;
     background-color: #13132B;
     color: #F0F0FF;
-    height: 42px;
 }
 
 .user-form input::placeholder {
     color: #9B9BCC;
+
+}
+
+.user-form input[name="age"] {
+    flex: 0 0 80px;
+    min-width: unset;
+
 }
 
 .user-form input:focus {
     outline: none;
-    border-color: #A855F7;
-    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.25);
 }
 
 .user-form button {

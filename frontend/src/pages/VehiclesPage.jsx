@@ -57,9 +57,10 @@ export default function VehiclesPage() {
     useEffect(() => { loadAll(); }, []);
 
     function validatePlate(value) {
-        const regex = /^\d{4}[A-Za-z]{3}$/;
-        if (!value) return "La matrícula es obligatoria.";
-        if (!regex.test(value)) return "Formato: 1234ABC";
+        const normalized = value.replace(/\s/g, "").toUpperCase();
+        const regex = /^\d{4}[A-Z]{3}$/;
+        if (!normalized) return "La matrícula es obligatoria.";
+        if (!regex.test(normalized)) return "Formato: 4 números y 3 letras (ej: 1234ABC).";
         return "";
     }
 
@@ -94,6 +95,10 @@ export default function VehiclesPage() {
         if (field === "capacity") setErrors(prev => ({ ...prev, capacity: validateCapacity(form.capacity) }));
     }
 
+    function normalizePlate(value) {
+        return value.replace(/\s/g, "").toUpperCase();
+    }
+
     async function handleSubmit(e) {
         e.preventDefault();
         setSubmitError("");
@@ -104,7 +109,7 @@ export default function VehiclesPage() {
             if (plateError) { setErrors(prev => ({ ...prev, plate: plateError })); return; }
             if (capacityError) { setErrors(prev => ({ ...prev, capacity: capacityError })); return; }
             try {
-                await createCar({ user_id: Number(form.user_id), color: form.color || null, active: form.active, plate: form.plate, capacity: form.capacity ? Number(form.capacity) : null, electrical: form.electrical });
+                await createCar({ user_id: Number(form.user_id), color: form.color || null, active: form.active, plate: normalizePlate(form.plate), capacity: form.capacity ? Number(form.capacity) : null, electrical: form.electrical });
             } catch (err) { setSubmitError(err.message); return; }
         } else {
             try {
@@ -117,28 +122,22 @@ export default function VehiclesPage() {
     }
 
     async function handleSaveCar() {
+        const normalized = normalizePlate(editingCar.plate);
+        const plateError = validatePlate(editingCar.plate);
+        if (plateError) { alert(plateError); return; }
+        if (editingCar.electrical && editingCar.capacity) {
+            const capError = validateCapacity(editingCar.capacity);
+            if (capError) { alert(capError); return; }
+        }
         try {
             await updateCar(editingCar.id, {
                 color: editingCar.color || null,
                 active: editingCar.active,
-                plate: editingCar.plate,
+                plate: normalized,
                 capacity: editingCar.capacity ? Number(editingCar.capacity) : null,
                 electrical: editingCar.electrical
             });
             setEditingCar(null);
-            loadAll();
-        } catch (err) { console.error(err); }
-    }
-
-    async function handleSaveBike() {
-        try {
-            await updateBike(editingBike.id, {
-                color: editingBike.color || null,
-                active: editingBike.active,
-                basket: editingBike.basket,
-                type_id: editingBike.type_id ? Number(editingBike.type_id) : null
-            });
-            setEditingBike(null);
             loadAll();
         } catch (err) { console.error(err); }
     }

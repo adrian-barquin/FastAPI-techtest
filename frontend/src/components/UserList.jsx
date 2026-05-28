@@ -25,28 +25,21 @@ export default function UserList({
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const filterRef = useRef(null);
-
-    useEffect(() => {
-        function handleClickOutside(e) {
-            if (filterRef.current && !filterRef.current.contains(e.target)) {
-                setOpen(false);
-            }
-        }
-        if (open) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [open]);
-
     const filteredUsers = users.filter((user) => {
         if(vehicleFilter === "all") return true;
         if(vehicleFilter === "yes") return user.active === true;
         if(vehicleFilter === "no") return user.active === false;
         return true;
     });
+
+    useEffect(() => { setCurrentPage(1); }, [vehicleFilter, pageSize]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
+    const safePage = Math.min(currentPage, totalPages);
+    const startIndex = (safePage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, filteredUsers.length);
+    const pageUsers = filteredUsers.slice(startIndex, endIndex);
+    const rangeLabel = filteredUsers.length === 0 ? "0" : `${startIndex + 1}-${endIndex}`;
 
     function toggleUser(id, checked) {
         if(checked) {
@@ -60,35 +53,25 @@ export default function UserList({
 
     return (
         <div className="user-list">
-            <div className="user-list-toolbar">
-                <span className="user-list-count">{filteredUsers.length} registro{filteredUsers.length !== 1 ? "s" : ""}</span>
-                <div className="filter-wrapper" ref={pageSizeRef}>
-                    <button type="button" className="filter-toggle" onClick={() => setPageSizeOpen(p => !p)}>
-                        Mostrar {pageSize} ▾
-                    </button>
-                    {pageSizeOpen && (
-                        <div className="filter-dropdown">
-                            {[10, 20, 50, 100].map(n => (
-                                <label key={n}>
-                                    <input
-                                        type="radio"
-                                        name="page-size"
-                                        checked={pageSize === n}
-                                        onChange={() => { setPageSize(n); setPageSizeOpen(false); }}
-                                    />
-                                    {n}
-                                </label>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-
             <div className="user-list-scroll">
                 <table>
                     <thead>
                         <tr>
-                            {deleteMode && <th></th>}
+                            {deleteMode && (
+                                <th>
+                                    <input
+                                        type="checkbox"
+                                        checked={filteredUsers.length > 0 && filteredUsers.every(u => selectedUsers.includes(u.id))}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedUsers(filteredUsers.map(u => u.id));
+                                            } else {
+                                                setSelectedUsers([]);
+                                            }
+                                        }}
+                                    />
+                                </th>
+                            )}
                             <th>Nombre</th>
                             <th>Email</th>
                             <th>Teléfono</th>
@@ -119,14 +102,14 @@ export default function UserList({
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredUsers.length === 0 ? (
+                        {noResults ? (
                             <tr>
-                                <td colSpan={deleteMode ? 5 : 4} className="user-list-empty">
+                                <td colSpan={deleteMode ? 6 : 5} className="user-list-empty">
                                     No hay usuarios
                                 </td>
                             </tr>
                         ) : (
-                            filteredUsers.map((user) => (
+                            pageUsers.map((user) => (
                                 <tr key={user.id} className={user.active ? "row-active" : "row-inactive"}>
                                     {deleteMode && (
                                         <td>
@@ -148,6 +131,51 @@ export default function UserList({
                         )}
                     </tbody>
                 </table>
+            </div>
+
+            <div className="user-list-toolbar">
+                <span className="user-list-count">{filteredUsers.length} registro{filteredUsers.length !== 1 ? "s" : ""}</span>
+
+                <div className="user-list-pagination">
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={safePage === 1}
+                    >
+                        ‹
+                    </button>
+                    <span className="pagination-info">
+                        {rangeLabel} &nbsp;·&nbsp; Página {safePage} de {totalPages}
+                    </span>
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={safePage === totalPages}
+                    >
+                        ›
+                    </button>
+                </div>
+
+                <div className="filter-wrapper" ref={pageSizeRef}>
+                    <button type="button" className="filter-toggle" onClick={() => setPageSizeOpen(p => !p)}>
+                        Mostrar {pageSize} ▾
+                    </button>
+                    {pageSizeOpen && (
+                        <div className="filter-dropdown" style={{ bottom: "100%", top: "auto", marginBottom: 10, marginTop: 0 }}>
+                            {[10, 20, 50, 100].map(n => (
+                                <label key={n}>
+                                    <input
+                                        type="radio"
+                                        name="page-size"
+                                        checked={pageSize === n}
+                                        onChange={() => { setPageSize(n); setPageSizeOpen(false); }}
+                                    />
+                                    {n}
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

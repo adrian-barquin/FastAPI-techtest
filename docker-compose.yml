@@ -8,4 +8,19 @@ services:
     container_name: fastapi-techtest
     ports:
       - "8000:8000"
+    volumes:
+      - ./test.db:/app/test.db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE=http://localhost:8000
+    container_name: frontend-techtest
+    ports:
+      - "4173:4173"
+    depends_on:
+      - fastapi
     restart: unless-stopped

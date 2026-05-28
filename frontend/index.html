@@ -1,13 +1,51 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
+    <link rel="icon" type="image/gif" href="/favicon.gif" />
+    <title>Gestión usuarios</title>
+</head>
   <body>
     <div id="root"></div>
+    <div id="modal-root"></div>
+
+    <script>
+      (function () {
+        const TOTAL_FRAMES = 18;    
+        const MS_PER_FRAME = 140;  
+    
+        const frames = Array.from({ length: TOTAL_FRAMES }, (_, i) => `/f${i}.png`);
+    
+        const link = document.createElement("link");
+        link.rel = "icon";
+        link.type = "image/png";
+        document.head.appendChild(link);
+    
+        let current = 0;
+        link.href = frames[0];
+    
+        // Precarga frames
+        const preloaded = frames.map((src) => {
+          const img = new Image();
+          img.src = src;
+          return img;
+        });
+    
+        const canvas = document.createElement("canvas");
+        canvas.width = 32;
+        canvas.height = 32;
+        const ctx = canvas.getContext("2d");
+
+        setInterval(() => {
+          ctx.clearRect(0, 0, 32, 32);
+          ctx.drawImage(preloaded[current], 0, 0, 32, 32);
+          link.href = canvas.toDataURL("image/png"); 
+          current = (current + 1) % TOTAL_FRAMES;
+        }, MS_PER_FRAME);
+      })();
+    </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -1,11 +1,8 @@
 __pycache__/
 *.pyc
-*.db
-
+*.pyo
 venv/
-
-.git
-.gitignore
-
+.env
+*.db
+*.log
 .DS_Store
-Thumbs.db

@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./UserList.css";
-
 
 export default function UserList({
     users = [], 
@@ -11,17 +10,37 @@ export default function UserList({
     setSelectedUsers = () => {}
 }){
     const [open, setOpen] = useState(false);
+    const [pageSizeOpen, setPageSizeOpen] = useState(false);
+    const [pageSize, setPageSize] = useState(10);
+    const [currentPage, setCurrentPage] = useState(1);
+    const filterRef = useRef(null);
+    const pageSizeRef = useRef(null);
+
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (filterRef.current && !filterRef.current.contains(e.target)) setOpen(false);
+            if (pageSizeRef.current && !pageSizeRef.current.contains(e.target)) setPageSizeOpen(false);
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const filteredUsers = users.filter((user) => {
         if(vehicleFilter === "all") return true;
-        if(vehicleFilter === "yes") return user.active ===true;
+        if(vehicleFilter === "yes") return user.active === true;
         if(vehicleFilter === "no") return user.active === false;
         return true;
     });
 
-    if(filteredUsers.length==0){
-        return <p className="user-list-empty">No hay usuarios</p>
-    }
+    useEffect(() => { setCurrentPage(1); }, [vehicleFilter, pageSize]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
+    const safePage = Math.min(currentPage, totalPages);
+    const startIndex = (safePage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, filteredUsers.length);
+    const pageUsers = filteredUsers.slice(startIndex, endIndex);
+
+    const rangeLabel = filteredUsers.length === 0 ? "0" : `${startIndex + 1}-${endIndex}`;
 
     function toggleUser(id, checked) {
         if(checked) {
@@ -31,46 +50,74 @@ export default function UserList({
         }
     }
 
+    const noResults = filteredUsers.length === 0;
+
     return (
-        <>
-            <div className="user-list">
+        <div className="user-list">
+            <div className="user-list-toolbar">
+                <span className="user-list-count">{filteredUsers.length} registro{filteredUsers.length !== 1 ? "s" : ""}</span>
+                <div className="filter-wrapper" ref={pageSizeRef}>
+                    <button type="button" className="filter-toggle" onClick={() => setPageSizeOpen(p => !p)}>
+                        Mostrar {pageSize} ▾
+                    </button>
+                    {pageSizeOpen && (
+                        <div className="filter-dropdown">
+                            {[10, 20, 50, 100].map(n => (
+                                <label key={n}>
+                                    <input
+                                        type="radio"
+                                        name="page-size"
+                                        checked={pageSize === n}
+                                        onChange={() => { setPageSize(n); setPageSizeOpen(false); }}
+                                    />
+                                    {n}
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="user-list-scroll">
                 <table>
                     <thead>
                         <tr>
-                            {deleteMode && <th></th>}
-
+                            {deleteMode && (
+                                <th>
+                                    <input
+                                        type="checkbox"
+                                        checked={filteredUsers.length > 0 && filteredUsers.every(u => selectedUsers.includes(u.id))}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedUsers(filteredUsers.map(u => u.id));
+                                            } else {
+                                                setSelectedUsers([]);
+                                            }
+                                        }}
+                                    />
+                                </th>
+                            )}
                             <th>Nombre</th>
                             <th>Email</th>
+                            <th>Teléfono</th>
                             <th>Edad</th>
                             <th className="vehicle-header">
-                                <div className="filter-wrapper">
+                                <div className="filter-wrapper" ref={filterRef}>
                                     <button type="button" className="filter-toggle" onClick={() => setOpen((prev) => !prev)}>
                                         ¿Posee vehículo? ▾
                                     </button>
                                     {open && (
                                         <div className="filter-dropdown">
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="vehicle-filter"
-                                                    checked={vehicleFilter === "all"}
-                                                    onChange={() => setVehicleFilter("all")} />
+                                            <label className={noResults ? "filter-disabled" : ""}>
+                                                <input type="radio" name="vehicle-filter" checked={vehicleFilter === "all"} onChange={() => setVehicleFilter("all")} />
                                                 Todos
                                             </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="vehicle-filter"
-                                                    checked={vehicleFilter === "yes"}
-                                                    onChange={() => setVehicleFilter("yes")} />
+                                            <label className={noResults ? "filter-disabled" : ""}>
+                                                <input type="radio" name="vehicle-filter" checked={vehicleFilter === "yes"} onChange={() => setVehicleFilter("yes")} />
                                                 Sí
                                             </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="vehicle-filter"
-                                                    checked={vehicleFilter === "no"}
-                                                    onChange={() => setVehicleFilter("no")} />
+                                            <label className={noResults ? "filter-disabled" : ""}>
+                                                <input type="radio" name="vehicle-filter" checked={vehicleFilter === "no"} onChange={() => setVehicleFilter("no")} />
                                                 No
                                             </label>
                                         </div>
@@ -80,24 +127,58 @@ export default function UserList({
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredUsers.map((user) => (
-                            <tr key={user.id} className={user.active ? "row-active" : "row-inactive"}>
-                                {deleteMode && (
-                                    <td>
-                                        <input type="checkbox" checked={selectedUsers.includes(user.id)} onChange={(e) => toggleUser(user.id, e.target.checked)} />
-                                    </td>
-                                )}
-                                <td>{user.name}</td>
-                                <td>{user.email}</td>
-                                <td>{user.age}</td>
-                                <td>{user.active ? "✔️" : "❌"}</td>
+                        {noResults ? (
+                            <tr>
+                                <td colSpan={deleteMode ? 6 : 5} className="user-list-empty">
+                                    No hay usuarios
+                                </td>
                             </tr>
-                        ))}
+                        ) : (
+                            pageUsers.map((user) => (
+                                <tr key={user.id} className={user.active ? "row-active" : "row-inactive"}>
+                                    {deleteMode && (
+                                        <td>
+                                            <input type="checkbox" checked={selectedUsers.includes(user.id)} onChange={(e) => toggleUser(user.id, e.target.checked)} />
+                                        </td>
+                                    )}
+                                    <td>{user.name}</td>
+                                    <td>{user.email}</td>
+                                    <td>{user.phone}</td>
+                                    <td>{user.age}</td>
+                                    <td style={{ textAlign: "center" }}>
+                                        {user.active
+                                            ? <span style={{ color: "#00FF88", fontSize: "1.1rem", fontWeight: "bold" }}>✔</span>
+                                            : <span style={{ color: "#FF2D78", fontSize: "1.1rem", fontWeight: "bold" }}>✘</span>
+                                        }
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
-            
-        </>
 
+            {!noResults && (
+                <div className="user-list-pagination">
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={safePage === 1}
+                    >
+                        ‹
+                    </button>
+                    <span className="pagination-info">
+                        {rangeLabel} &nbsp;·&nbsp; Página {safePage} de {totalPages}
+                    </span>
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={safePage === totalPages}
+                    >
+                        ›
+                    </button>
+                </div>
+            )}
+        </div>
     );
 }

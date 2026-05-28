@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from database.base import Base
 
 class Type(Base):
-    __tablename__ = "types"
+    __tablename__ = "type"
 
     description: Mapped[str] = mapped_column(String(150), nullable=False)
 

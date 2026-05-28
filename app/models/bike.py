@@ -3,17 +3,14 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from models.vehicle import Vehicle
 
 class Bike(Vehicle):
-    __tablename__ = "bikes"
+    __tablename__ = "bike"
+    __mapper_args__ = {"polymorphic_identity": "bike"}
 
-    __mapper_args__ = {
-        "polymorphic_identity": "bike"
-    }
-
-    id: Mapped[int] = mapped_column(ForeignKey("vehicles.id"), primary_key=True)
+    id: Mapped[int] = mapped_column(ForeignKey("vehicle.id"), primary_key=True)
     basket: Mapped[bool | None]
-    type_id: Mapped[int] = mapped_column(ForeignKey("types.id"))
+    type_id: Mapped[int | None] = mapped_column(ForeignKey("type.id"), nullable=True)
 
-    byke_type = relationship("Type")
+    bike_type = relationship("Type", backref="bikes")
 
     def __repr__(self) -> str:
         return f"<Bike id={self.id} basket={self.basket}>"

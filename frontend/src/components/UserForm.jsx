@@ -166,7 +166,7 @@ export default function UserForm({ users, onUserCreated }) {
 
                             onChange={(e) => setForm((prev) => ({...prev, active: e.target.checked})) }
                         />
-                        ¿Posee vehículo?
+                        ¿Usuario activo?
                     </label>
 
                     <button type="submit">Crear</button>

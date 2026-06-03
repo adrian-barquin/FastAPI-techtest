@@ -79,7 +79,7 @@ export default function UserList({
                             <th className="vehicle-header">
                                 <div className="filter-wrapper" ref={filterRef}>
                                     <button type="button" className="filter-toggle" onClick={() => setOpen((prev) => !prev)}>
-                                        ¿Posee vehículo? ▾
+                                        ¿Usuario activo? ▾
                                     </button>
                                     {open && (
                                         <div className="filter-dropdown">

@@ -13,17 +13,17 @@
       (function () {
         const TOTAL_FRAMES = 18;    
         const MS_PER_FRAME = 140;  
-    
+
         const frames = Array.from({ length: TOTAL_FRAMES }, (_, i) => `/f${i}.png`);
-    
+
         const link = document.createElement("link");
         link.rel = "icon";
         link.type = "image/png";
         document.head.appendChild(link);
-    
+
         let current = 0;
         link.href = frames[0];
-    
+
         const preloaded = frames.map((src) => {
           const img = new Image();
           img.src = src;

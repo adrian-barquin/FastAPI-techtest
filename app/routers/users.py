@@ -26,7 +26,7 @@ async def create_user(user: UserCreate,db: AsyncSession = Depends(get_db)):
 @router.get("/active-with-inactive-vehicles", response_model=list[UserWithInactiveVehicles])
 async def get_active_users_with_inactive_vehicles(db: AsyncSession = Depends(get_db)):
     stmt = (
-        select(User).join 
+        select(User).distinct().join 
         (Vehicle, (Vehicle.user_id==User.id) & (Vehicle.active.is_(False)))
         .where(User.active.is_(True)).options(selectinload(User.vehicles.and_(Vehicle.active.is_(False))))
     )
